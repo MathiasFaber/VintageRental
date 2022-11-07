@@ -16,7 +16,7 @@ function Profile({ navigation }) {
 
     const handleLogOut = async () => {
         await firebase.auth().signOut();
-        alert("Logged out, bye :D")
+        alert("Du er nu logget ud, på gensyn! :D")
         if (state == true) {
             setState(false)
         } else {
@@ -24,9 +24,6 @@ function Profile({ navigation }) {
         }
     };
 
-    // Spørgsmål: jeg kan først se den bruger der er logget ind, når jeg selv laver opdateringer i koden. Why? 
-    // siden opdaterer ikke når der navigeres til den, og man kan derfor ikke se om en bruger har logget ind..??
-    
     if (!firebase.auth().currentUser) {
         return <View>
             <Text style={{ textAlign: 'center', fontSize: 20 }}>Ikke logget ind :(((</Text>
@@ -35,10 +32,23 @@ function Profile({ navigation }) {
     }
 
     if (firebase.auth().currentUser !== undefined) {
+        const meEmail = firebase.auth().currentUser?.email
+        const getUserAddress = () => { 
+            var returnThis;
+            var ref = firebase.database().ref(`/users`)
+            ref.orderByChild("mail").equalTo(meEmail).on('value', snapshot => {
+                const value = snapshot.val()
+                const lol = Object.values(value)
+                returnThis = lol[0].address
+            })
+            return returnThis
+        }
+
         return (
-            <View style={styles.container} >
-                <Image source={require('/Users/mathiasfaberkristiansen/Desktop/expo.nosync/GK2/vr.png')} style={{ width: '90%', height: 250, alignSelf: 'center', borderRadius:25 }}></Image>
-                <Text style={{ borderTopWidth: 75, borderBottomWidth: 50, alignSelf: 'center', fontWeight: 'bold' }}>Nuværende bruger: {firebase.auth().currentUser.email}</Text>
+            <View style={styles.container}>
+                <Image source={require('../assets/vr.png')} style={{ width: '90%', height: 250, alignSelf: 'center', borderRadius: 25 }}></Image>
+                <Text style={{ borderTopWidth: 75, borderBottomWidth: 5, alignSelf: 'center', fontWeight: 'bold' }}>Nuværende bruger: {firebase.auth().currentUser.email}</Text>
+                <Text style={{ borderTopWidth: 5, borderBottomWidth: 50, alignSelf: 'center', fontWeight: 'bold' }}>Adresse: {getUserAddress()}</Text>
                 <Text style={{ alignSelf: 'center', fontWeight: '100' }}>"Liste over ting jeg har til salg"</Text>
                 <Text style={{ alignSelf: 'center', fontWeight: '100' }}>"Liste over ting jeg har til salg"</Text>
                 <Text style={{ borderBottomWidth: 100, alignSelf: 'center', fontWeight: '100' }}>"Liste over ting jeg har til salg"</Text>

@@ -1,14 +1,16 @@
 import * as React from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, Image, StyleSheet, Pressable } from 'react-native';
 import firebase from 'firebase/compat';
 import { useEffect, useState } from "react";
-// to have the photo with the clothes details, the photo "name" or potentially ID, should be connected to the details. This should be done by saving the image name/id in the database with the details in order to be able to fetch the photo when fetching the details
 
 const ClothesDetails = ({ route, navigation }) => {
     const [Clothes, setClothes] = useState({});
 
     useEffect(() => {
-        setClothes(route.params.Clothes[1]);
+        console.log(route.params.Clothes, "den her idnex 1 fejler")
+        console.log(route.params.Clothes[1], "index 1")
+        const selectedClothing = route.params.Clothes
+        selectedClothing[1] == undefined ? setClothes(route.params.Clothes) : setClothes(route.params.Clothes[1]);
         return () => {
             setClothes({})
         }
@@ -20,12 +22,12 @@ const ClothesDetails = ({ route, navigation }) => {
     return (
         <View style={styles.container}>
             <Image
-                source={{url:Clothes.imgurl}}
+                source={{ url: Clothes.imgurl }}
                 style={{ width: '97%', height: '50%', alignSelf: "center" }}></Image>
             {
                 Object.entries(Clothes).map((item, index) => {
-                    // img og imurl fjernes, for ikke at vise dem som skrift på siden. 
-                    if(item[0] === 'img' || item[0] === 'imgurl'){
+                    // img, imgurl, koordinater og vaskeanvisnigner fjernes, for ikke at vise dem som skrift på siden. 
+                    if (item[0] === 'img' || item[0] === 'imgurl' || item[0] === 'longlat' || item[0] === 'Vaskeanvisninger') {
                         delete item[0]
                         delete item[1]
                     }
@@ -37,6 +39,21 @@ const ClothesDetails = ({ route, navigation }) => {
                     )
                 })
             }
+            <Pressable style={{
+                alignItems: 'center',
+                justifyContent: 'center',
+                paddingVertical: 12,
+                paddingHorizontal: 32,
+                borderRadius: 20,
+                elevation: 3,
+                backgroundColor: '#fac8b4',
+                width: '96%',
+                alignSelf: 'center'
+            }} onPress={() => console.log('Button pressed')}>
+                <Text>
+                    Kontakt udlejer
+                </Text>
+            </Pressable>
         </View>
     );
 }
@@ -50,6 +67,6 @@ const styles = StyleSheet.create({
         padding: 5,
         flexDirection: 'row',
     },
-    label: { width: 100, fontWeight: 'bold' },
+    label: { width: 150, fontWeight: 'bold' },
     value: { flex: 1 },
 });

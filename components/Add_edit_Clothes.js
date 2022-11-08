@@ -9,48 +9,106 @@ import {
     SafeAreaView,
     Alert,
     Image,
-    ActivityIndicator
+    ActivityIndicator,
+    TouchableOpacity,
+    Modal
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker'
 import { firebase } from '../FirebaseConfig'
-import { CheckBox } from 'react-native-elements'
-
+import Checkbox from 'expo-checkbox';
+import Pressable from 'react-native/Libraries/Components/Pressable/Pressable';
+import * as Location from 'expo-location';
+import { Accuracy } from "expo-location";
 
 // This is the Add/Edit clothes component, that handles new or updated advertisemnts in the app.
 function Add_edit_Clothes({ navigation, route }) {
     // initial state is an object of key/value pairs, containing the keys of each prop an advertisement consists of. 
-    const initialState = { Produkt: '', Pris: '', Sælger: '', Størrelse: '' }
-    // this state is manipulated when an advertisement is created or updated
+    const initialState = { Produkt: '', Pris: '', Udlejningsperiode: '', Størrelse: '' }
+    // The NewClothes state is manipulated when an advertisement is created or updated. It contains the initialstate, which will be updated to have the values of each key when an advertisement is created. 
     const [newClothes, setNewClothes] = useState(initialState);
     const isEditClothes = route.name === "Edit Clothes"
     const [image, setImage] = useState([])
     const [uploading, setUploading] = useState(false)
     const [firebaseUrl, setFirebaseUrl] = useState('')
-    const [state, setState] = useState(false)
-    const [checked, setChecked] = useState(false)
+    const [checked, setChecked] = useState(true)
+    const [checked2, setChecked2] = useState(true)
+
+    const [username, setUsername] = useState('')
+    const [address, setAddress] = useState('')
+    const [currentLocation, setCurrentLocation] = useState({})
+
+    const [modalVisible, setModalVisible] = useState(false);
+
+
+    navigation.addListener('focus', () => {
+        if (firebase.auth().currentUser?.displayName === null) {
+            return <View>
+                <Text style={{ textAlign: 'center', fontSize: 20 }}>Ikke logget ind :(((</Text>
+                <Button onPress={() => navigation.navigate('Login')} title="Log ind?" />
+            </View>;
+        } else {
+            const user = firebase.auth().currentUser
+            const mail = user.email
+            var ref = firebase.database().ref(`/users`)
+            ref.orderByChild("mail").equalTo(mail).on('value', snapshot => {
+                const value = snapshot.val()
+                const lol = Object.values(value)
+                setAddress(lol[0].address)
+                setUsername(lol[0].username)
+            })
+        }
+
+    })
+
+    const updateLocation = async () => {
+        var coordinates;
+        await Location.getCurrentPositionAsync({ accuracy: Accuracy.Balanced }).then((item) => {
+            console.log(item.coords)
+            const latitude = item.coords.latitude
+            const longitude = item.coords.longitude
+            coordinates = {
+                latitude,
+                longitude
+            }
+            console.log(coordinates, "koordinaterne b")
+            //setCurrentLocation(coordinates)
+        });
+        console.log(coordinates, "cocococ")
+        return coordinates
+    };
 
     // Sets the newClothes state to be equal to the new input from the edit form 
     const changeTextInput = (name, event) => {
         setNewClothes({ ...newClothes, [name]: event });
+        console.log(newClothes, "nyt ")
     }
     // HandleSave is used when saving ypur edited or newly created advertisement. It saves the data to the database. 
     const handleSave = async () => {
-        const { Produkt, Pris, Sælger, Størrelse } = newClothes;
+        var { Produkt, Pris, Udlejningsperiode, Størrelse, Vaskeanvisninger } = newClothes;
         // if one of the input fields are empty: alert it to the user. 
-        if (Produkt.length === 0 || Pris.length === 0 || Sælger.length === 0 || Størrelse.length === 0) {
+        if (Produkt.length === 0 || Pris.length === 0 || Udlejningsperiode.length === 0 || Størrelse.length === 0) {
             return Alert.alert('Et af felterne er tomme!');
+        }
+        console.log(checked, "checked")
+        console.log(Vaskeanvisninger, "vask")
+        if (Vaskeanvisninger === undefined && checked === false) {
+            return Alert.alert('Angiv venligst vaskeanvisninger');
+        }
+        if(checked === true){
+            Vaskeanvisninger = "Har vaskemærke"
         }
         // Updates the data in database, if all inputfields are filled out. 
 
-        uploadImage()
-
+        // uploadImage()
+        const coordinates = await updateLocation()
         if (isEditClothes) {
             const id = route.params.Clothes[0];
+            console.log(currentLocation, "location")
             try {
                 firebase
                     .database()
                     .ref(`/Clothess/${id}`)
-                    .update({ Produkt, Pris, Sælger, Størrelse, img: image[1] });
+                    .update({ Udlejer: username, Produkt, Pris, Udlejningsperiode, Størrelse, img: image[1], Vaskeanvisninger, longlat: coordinates });
                 Alert.alert("Din info er nu opdateret");
                 // When data is updated, user is navigated to the page of the advertisements, and should be able to see the changes from there. 
                 // navigation.navigate("Clothes Details", { Clothes });
@@ -58,32 +116,42 @@ function Add_edit_Clothes({ navigation, route }) {
                 console.log(`Error: ${error.message}`);
             }
         } else {
+            console.log(currentLocation, "location")
             try {
                 firebase
                     .database()
                     .ref('/Clothess/')
-                    .push({ Produkt, Pris, Sælger, Størrelse, img: image[1] });
+                    .push({ Udlejer: username, Produkt, Pris, Udlejningsperiode, Størrelse, img: image[1], Vaskeanvisninger, longlat: coordinates });
                 setNewClothes(initialState)
             } catch (error) {
                 console.log(`Error: ${error.message}`);
             }
         }
+
     };
 
-    // Camera -> upload photo experiments:
+    // Camera -> upload photo
     const pickImage = async () => {
+        let source = {}
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.All, // We can specify whether we need only Images or Videos
             allowsEditing: true,
             aspect: [4, 3],
             quality: 1,   // 0 means compress for small size, 1 means compress for maximum quality
         });
+        source = result
 
-        //console.log(result, 456);
+        let fileName = result.fileName;
+        console.log(fileName, "filename")
+        if (Platform.OS === 'ios' && (fileName.endsWith('.heic') || fileName.endsWith('.HEIC'))) {
+            source.fileName = `${fileName.split(".")[0]}.JPG`;
+        }
 
         if (!result.cancelled) {
-            setImage([result.uri, result.fileName]);
+            setImage([source.uri, source.fileName]);
         }
+        console.log(source, 456);
+
     };
 
     const uploadImage = async () => {
@@ -125,9 +193,26 @@ function Add_edit_Clothes({ navigation, route }) {
         )
         return firebaseUrl
     }
+
+
+    if (!firebase.auth().currentUser) {
+        return <View>
+            <Text style={{ textAlign: 'center', fontSize: 20 }}>Ikke logget ind :(((</Text>
+            <Button onPress={() => navigation.navigate('Login')} title="Log ind?" />
+        </View>;
+    }
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView>
+                <View style={styles.row3}>
+                    <Text style={styles.owner}>Udlejer: </Text>
+                    <Text style={{ textAlign: 'center' }}>{username}</Text>
+                </View>
+                <View style={styles.row}>
+
+                    <Text style={styles.owner}>Adresse: </Text>
+                    <Text style={{ textAlign: 'center' }}>{address}</Text>
+                </View>
                 {
                     Object.keys(initialState).map((key, index) => {
                         return (
@@ -142,17 +227,164 @@ function Add_edit_Clothes({ navigation, route }) {
                         )
                     })
                 }
-                    <CheckBox iconRight={true} style={{backgroundColor:'#fae4dc', color:'#fae4dc'}} onPress={() => { checked ? setChecked(false) : setChecked(true) }} checked={checked} title={'Har vaskemærke?'}/>
+                <View style={styles.row}>
+                    <Text style={styles.label}>Har vaskemærke</Text>
+                    <Checkbox style={{ marginLeft: 20 }} value={checked} onValueChange={setChecked} color={'#d9825f'} />
+                    <View style={styles.centeredView1}>
+                                        <Modal
+                                            animationType="slide"
+                                            transparent={true}
+                                            visible={modalVisible}
+                                            onRequestClose={() => {
+                                                Alert.alert("Modal has been closed.");
+                                                setModalVisible(!modalVisible);
+                                            }}
+                                        >
+                                            <View style={styles.centeredView1}>
+                                                <View style={styles.modalView1}>
+                                                    <Text style={styles.modalText1}>
+                                                        Angiv her hvordan det udlejede tøj skal vaskes/renses.
+                                                        Forskelligt tøj kan have forskellige vaskeanvisninger, og det
+                                                        er meget vigtigt at få angivet de rigtige vaskeanvisninger,
+                                                        så vores renserier kan vaske eller rense tøjet korrekt.
+                                                        Såfremt der hverken fremgår vaskemærke eller er opgivet
+                                                        vaskeanvisning, vil tøjet blive sent retur inden udlejning,
+                                                        og udlejer er ansvarlig for at handlen ikke gennemføres,
+                                                        grundet mangel på vaskeanvisnigner.
+                                                    </Text>
+                                                    <Pressable
+                                                        style={[styles.button, styles.buttonClose]}
+                                                        onPress={() => setModalVisible(!modalVisible)}
+                                                    >
+                                                        <Text style={styles.textStyle}>Forstået! :D</Text>
+                                                    </Pressable>
+                                                </View>
+                                            </View>
+                                        </Modal>
+                                        <Pressable
+                                            style={[styles.button, styles.buttonOpen]}
+                                            onPress={() => setModalVisible(true)}
+                                        >
+                                            <Text style={styles.textStyle}>?</Text>
+                                        </Pressable>
+                                    </View>
+                </View>
+                {
+                    checked ? null :
+                        <View>
 
-                {image[0] && <Image source={{ uri: image[0] }} style={{ width: 340, height: 400, alignSelf: "center" }} />}
-                <Button title='Select Image' onPress={pickImage} />
-                {!uploading ? <Button title={isEditClothes ? "Save changes" : "Add Clothes"} onPress={() => handleSave()} /> : <ActivityIndicator size={'small'} color='black' />}
+                            <View style={styles.row}>
+                                <Text style={styles.label}>Må vaskes?</Text>
+                                <Checkbox style={{ marginLeft: 20 }} value={checked2} onValueChange={setChecked2} color={'#d9825f'} />
+                            </View>
+                            <View>
+                                <View style={styles.row}>
+                                    <Text style={{ fontWeight: 'bold' }}>Vaskeanvisninger:</Text>
+                                </View>
+                                <View style={styles.row2}>
+                                    <TextInput
+                                        multiline
+                                        maxLength={120}
+                                        placeholder={'Fx. "30 grader, må ikke stryges"'}
+                                        onChangeText={(event) => changeTextInput("Vaskeanvisninger", event)}
+                                        style={{
+                                            borderWidth: 1,
+                                            padding: 5,
+                                            flex: 6,
+                                            marginLeft: 10,
+                                        }}
+                                    />
+                                    <View style={styles.centeredView}>
+                                        <Modal
+                                            animationType="slide"
+                                            transparent={true}
+                                            visible={modalVisible}
+                                            onRequestClose={() => {
+                                                Alert.alert("Modal has been closed.");
+                                                setModalVisible(!modalVisible);
+                                            }}
+                                        >
+                                            <View style={styles.centeredView}>
+                                                <View style={styles.modalView}>
+                                                    <Text style={styles.modalText}>
+                                                        Angiv her hvordan det udlejede tøj skal vaskes/renses.
+                                                        Forskelligt tøj kan have forskellige vaskeanvisninger, og det
+                                                        er meget vigtigt at få angivet de rigtige vaskeanvisninger,
+                                                        så vores renserier kan vaske eller rense tøjet korrekt.
+                                                        Såfremt der hverken fremgår vaskemærke eller er opgivet
+                                                        vaskeanvisning, vil tøjet blive sent retur inden udlejning,
+                                                        og udlejer er ansvarlig for at handlen ikke gennemføres,
+                                                        grundet mangel på vaskeanvisnigner.
+                                                    </Text>
+                                                    <Pressable
+                                                        style={[styles.button, styles.buttonClose]}
+                                                        onPress={() => setModalVisible(!modalVisible)}
+                                                    >
+                                                        <Text style={styles.textStyle}>Forstået! :D</Text>
+                                                    </Pressable>
+                                                </View>
+                                            </View>
+                                        </Modal>
+                                        <Pressable
+                                            style={[styles.button, styles.buttonOpen]}
+                                            onPress={() => setModalVisible(true)}
+                                        >
+                                            <Text style={styles.textStyle}>?</Text>
+                                        </Pressable>
+                                    </View>
+                                </View>
+                            </View>
+                        </View>
+
+                }
+
+                {image[0] && <Image source={{ uri: image[0] }} style={{ width: 340, height: 400, alignSelf: "center", margin: 10 }} />}
+                <Pressable style={{
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    paddingVertical: 12,
+                    paddingHorizontal: 32,
+                    borderRadius: 20,
+                    elevation: 3,
+                    backgroundColor: '#fac8b4',
+                    width: '96%',
+                    alignSelf: 'center',
+                    marginBottom: 15,
+                    marginTop: 5,
+                }} onPress={pickImage}>
+                    <Text>Select image</Text>
+                </Pressable>
+
+                {!uploading ?
+                    <Pressable style={{
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        paddingVertical: 12,
+                        paddingHorizontal: 32,
+                        borderRadius: 20,
+                        elevation: 3,
+                        backgroundColor: '#fac8b4',
+                        width: '96%',
+                        alignSelf: 'center',
+                        marginBottom: 100
+                    }} onPress={() => handleSave()}>
+                        {
+                            isEditClothes ? <Text>Save changes</Text> : <Text>Add clothes</Text>
+                        }
+                    </Pressable>
+                    :
+                    <ActivityIndicator size={'small'} color={'black'} />}
             </ScrollView>
         </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
+    textStyle: {
+        color: "white",
+        fontWeight: "bold",
+        textAlign: "center"
+    },
     container: {
         flex: 1,
         justifyContent: 'center',
@@ -162,6 +394,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         height: 30,
         margin: 10,
+        maxHeight: 100
     },
     row1: {
         flexDirection: 'row',
@@ -169,14 +402,119 @@ const styles = StyleSheet.create({
         margin: 10,
         fontWeight: 'bold'
     },
+    row2: {
+        flexDirection: 'row',
+        height: 55,
+        margin: 10,
+    },
+    row3: {
+        flexDirection: 'row',
+        height: 30,
+        margin: 10,
+        marginTop: 25
+    },
     label: {
         fontWeight: 'bold',
-        width: 100
+        width: 130
     },
     input: {
         borderWidth: 1,
         padding: 5,
         flex: 1
+    },
+    owner: {
+        fontWeight: 'bold',
+        width: 110,
+        flexDirection: 'row',
+        marginRight: '5%',
+
+    },
+    textBoxButton: {
+        position: 'absolute',
+        right: 20,
+        zIndex: 100,
+        width: 20,
+        height: 20,
+        borderWidth: 1,
+        borderRadius: 10,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    centeredView: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        marginTop: 22,
+        marginBottom: 10
+    },
+    modalView: {
+        margin: 20,
+        backgroundColor: "white",
+        borderRadius: 20,
+        padding: 35,
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5
+    },
+    button: {
+        borderRadius: 20,
+        elevation: 2,
+        padding: 10,
+    },
+    buttonOpen: {
+        backgroundColor: "#fac8b4",
+        zIndex: 100,
+        width: 35,
+        height: 35,
+        borderRadius: 15,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 15
+    },
+    buttonClose: {
+        backgroundColor: "#fac8b4",
+    },
+    textStyle: {
+        color: "white",
+        fontWeight: "bold",
+        textAlign: "center"
+    },
+    modalText: {
+        marginBottom: 15,
+        textAlign: "center"
+    },
+    centeredView1: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "left",
+        marginTop: 15,
+        marginBottom: 10,
+        marginLeft: 10
+    },
+    modalView1: {
+        margin: 20,
+        backgroundColor: "white",
+        borderRadius: 2,
+        padding: 35,
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5
+    },
+    modalText1: {
+        marginBottom: 15,
+        textAlign: "center"
     },
 });
 

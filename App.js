@@ -12,7 +12,8 @@ import Profile from './components/Profile';
 import Message from './components/Message';
 import Login from './components/Login';
 import SignUp from './components/SignUp';
-import HeadlessJsTaskError from 'react-native/Libraries/ReactNative/HeadlessJsTaskError';
+import Map from './components/Map';
+
 
 export default function App() {
 
@@ -56,6 +57,8 @@ export default function App() {
     };
   }, []);
 
+
+  // MyTheme is controlling the colors of the navigation container. 
   const MyTheme = {
     ...DefaultTheme,
     colors: {
@@ -72,12 +75,13 @@ export default function App() {
   const StackNavigation = () => {
     return(
         <Stack.Navigator>
-          <Stack.Screen name={'Clothes List'} component={ClothesList} options={{headerStyle:false}}/>
+          <Stack.Screen name={'Clothes List'} component={ClothesList}/>
           <Stack.Screen name={'Clothes Details'} component={ClothesDetails}/>
           <Stack.Screen name={'Edit Clothes'} component={Add_edit_Clothes}/>
           <Stack.Screen name={'Login'} component={Login}/>
           <Stack.Screen name={'Sign Up'} component={SignUp}/>
           <Stack.Screen name={'Min profil'} component={Profile}/>
+          <Stack.Screen name={'Map'} component={Map}/>
         </Stack.Navigator>
     ) 
   }

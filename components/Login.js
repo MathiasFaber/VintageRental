@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import {
-    Button,
     Text,
     View,
     TextInput,
     StyleSheet,
     Pressable,
-    Image
+    Image,
+    ActivityIndicator,
+    ScrollView
 } from 'react-native';
 import firebase from "firebase/compat";
 
@@ -15,10 +16,11 @@ function Login({ navigation }) {
     const [password, setPassword] = useState('')
     const [errorMessage, setErrorMessage] = useState(null)
     const [state, setState] = useState(false)
+    const [loading, setLoading] = useState(false)
 
     const handleLogOut = async () => {
         await firebase.auth().signOut();
-        alert("Logged out, bye :D")
+        alert("Du er nu logget ud, på gensyn! :D")
         if (state == true) {
             setState(false)
         } else {
@@ -32,25 +34,43 @@ function Login({ navigation }) {
         } else {
             setState(true)
         }
-    }) 
+    })
     if (firebase.auth().currentUser !== null) {
         return (
-            <View>
-                <Text>Already logged in</Text>
-                <Button onPress={handleLogOut} title={'Log ud?'}/>
+            <View style={styles.container}>
+                <Image source={require('../assets/vr.png')} style={{ width: '90%', height: 250, alignSelf: 'center', borderRadius: 25 }}></Image>
+                <Text style={styles.text}>Du er allerede logget ind :D</Text>
+                <Pressable style={{
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    paddingVertical: 12,
+                    paddingHorizontal: 32,
+                    borderRadius: 20,
+                    elevation: 3,
+                    backgroundColor: '#fac8b4',
+                    width: '96%',
+                    alignSelf: 'center'
+                }} onPress={() => handleLogOut()} title="Log ind">
+                    <Text>
+                        Log ud
+                    </Text>
+                </Pressable>
             </View>
         )
     }
 
- 
+
     const handleSubmit = async () => {
+        setLoading(true)
         try {
             await firebase.auth().signInWithEmailAndPassword(email, password).then((data) => {
                 alert("Logged in succesfully :D")
-                navigation.navigate('Min profil')
+                navigation.navigate('Clothes List')
             });
+            setLoading(false)
         } catch (error) {
             setErrorMessage(error.message)
+            setLoading(false)
         }
     }
 
@@ -65,15 +85,17 @@ function Login({ navigation }) {
             backgroundColor: '#fac8b4',
             width: '96%',
             alignSelf: 'center'
-        }} onPress={() => handleSubmit()} title="Log ind">
-            <Text>
-                Log ind
-            </Text>
+        }} onPress={() => handleSubmit()}>
+            {loading ?
+                <ActivityIndicator size={'small'} color={'black'}></ActivityIndicator>
+                : <Text>
+                    Log ind
+                </Text>}
+
         </Pressable>
     };
 
     const signUpButton = () => {
-        // lav til pressable for bedre styling
         return <Pressable style={{
             alignItems: 'center',
             justifyContent: 'center',
@@ -83,18 +105,18 @@ function Login({ navigation }) {
             elevation: 3,
             backgroundColor: '#fac8b4',
             width: '96%',
-            alignSelf: 'center'
+            alignSelf: 'center',
+            marginBottom: 350
         }} onPress={() => navigation.navigate("Sign Up")} title="Log ind">
             <Text>
-                 Ny bruger? Lav en profil her :-D
+                Ny bruger? Lav en profil her :-D
             </Text>
         </Pressable>
-        //<Button onPress={() => navigation.navigate("Sign Up")} title="Ny bruger? Lav en profil her:D"/>;
     };
 
     return (
-        <View style={styles.view}>
-            <Image source={require('/Users/mathiasfaberkristiansen/Desktop/expo.nosync/GK2/vr.png')} style={{ width: '90%', height: 270, alignSelf: 'center', borderRadius:25 }}></Image>
+        <ScrollView style={styles.view}>
+            <Image source={require('../assets/vr.png')} style={{ width: '90%', height: 270, alignSelf: 'center', borderRadius: 25 }}></Image>
             <Text>{'\n'}</Text>
             <Text style={styles.header}>Login</Text>
             <TextInput
@@ -116,11 +138,22 @@ function Login({ navigation }) {
             {loginButton()}
             <Text>{'\n'}</Text>
             {signUpButton()}
-        </View>
+        </ScrollView>
     );
 }
 
 const styles = StyleSheet.create({
+    container: {
+        justifyContent: 'center',
+        paddingTop: '15,5%',
+        backgroundColor: '#e2e1de',
+        padding: 8,
+    },
+    text: {
+        fontSize: 25,
+        alignSelf: 'center',
+        padding: 50
+    },
     error: {
         color: 'red',
     },
@@ -134,7 +167,7 @@ const styles = StyleSheet.create({
         fontSize: 40,
         fontFamily: 'Snell Roundhand',
         alignSelf: 'center'
-    },
+    }
 });
 
 export default Login;

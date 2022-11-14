@@ -65,6 +65,7 @@ function ClothesList({ navigation }) {
                         updatedObjects = snapshot.val()
                         setClothess(updatedObjects)
                         Object.values(updatedObjects).forEach((x) => {
+                            console.log(x.img, "x.img")
                             firebase
                                 .storage()
                                 .ref()

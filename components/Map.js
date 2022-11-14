@@ -68,29 +68,6 @@ function Map({ route, navigation }) {
     const closeInfoBox = () =>
         setSelectedCoordinate(null) && setSelectedAddress(null)
 
-    // RenderCurrentLocation tager props med som argument og tjekker om, der er givet adgang til enhedens lokationsdata
-    // Er der ikke givet adgang returneres der en tekstkomponent med instruktioner til brugeren
-    //Er der givet tilladelse og currenLocation ikke har en værdi, vil der fremvises en knap komponent
-    //Er der givet tilladelse go currentlokation har en værdi, vil lokationsdata blive udskrvet i en infoboks
-    const RenderCurrentLocation = (props) => {
-        if (props.hasLocationPermission === null) {
-            return null;
-        }
-        if (props.hasLocationPermission === false) {
-            return <Text>No location access. Go to settings to change</Text>;
-        }
-        return (
-            <View>
-                <Button style title="update location" onPress={updateLocation} />
-                {currentLocation && (
-                    <Text>
-                        {`lat: ${currentLocation.latitude},\nLong:${currentLocation.longitude
-                            }\nacc: ${currentLocation.accuracy}`}
-                    </Text>
-                )}
-            </View>
-        );
-    };
 
     const handleSelectClothes = (index, obj) => {
         navigation.navigate('Clothes Details', { Clothes: obj });
@@ -99,8 +76,6 @@ function Map({ route, navigation }) {
 
     const ClothesArray = Object.values(route.params);
     const ClothesKeys = Object.keys(route.params);
-
-    console.log(ClothesArray.map((marker, index) => { console.log(marker.longlat) }))
 
     //Slutteligt benyttes SafeAreaView der sikrer at indholdet ikke overskrider grænser for enheden(Kun for IOS enheder version 11 eller nyere )
     /*
@@ -127,7 +102,7 @@ function Map({ route, navigation }) {
                         latitude: 55.676098,
                         longitude: 12.568337,
                         latitudeDelta: 0.0952,
-                        longitudeDelta: 0.1129
+                        longitudeDelta: 0.1129 
                     }}
                 >
 

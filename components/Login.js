@@ -10,6 +10,8 @@ import {
     ScrollView
 } from 'react-native';
 import firebase from "firebase/compat";
+import LoginButton from './Buttons/LoginButton';
+import SignUpButton from './Buttons/SignUpButton';
 
 function Login({ navigation }) {
     const [email, setEmail] = useState('')
@@ -59,61 +61,6 @@ function Login({ navigation }) {
         )
     }
 
-
-    const handleSubmit = async () => {
-        setLoading(true)
-        try {
-            await firebase.auth().signInWithEmailAndPassword(email, password).then((data) => {
-                alert("Logged in succesfully :D")
-                navigation.navigate('Clothes List')
-            });
-            setLoading(false)
-        } catch (error) {
-            setErrorMessage(error.message)
-            setLoading(false)
-        }
-    }
-
-    const loginButton = () => {
-        return <Pressable style={{
-            alignItems: 'center',
-            justifyContent: 'center',
-            paddingVertical: 12,
-            paddingHorizontal: 32,
-            borderRadius: 20,
-            elevation: 3,
-            backgroundColor: '#fac8b4',
-            width: '96%',
-            alignSelf: 'center'
-        }} onPress={() => handleSubmit()}>
-            {loading ?
-                <ActivityIndicator size={'small'} color={'black'}></ActivityIndicator>
-                : <Text>
-                    Log ind
-                </Text>}
-
-        </Pressable>
-    };
-
-    const signUpButton = () => {
-        return <Pressable style={{
-            alignItems: 'center',
-            justifyContent: 'center',
-            paddingVertical: 12,
-            paddingHorizontal: 32,
-            borderRadius: 20,
-            elevation: 3,
-            backgroundColor: '#fac8b4',
-            width: '96%',
-            alignSelf: 'center',
-            marginBottom: 350
-        }} onPress={() => navigation.navigate("Sign Up")} title="Log ind">
-            <Text>
-                Ny bruger? Lav en profil her :-D
-            </Text>
-        </Pressable>
-    };
-
     return (
         <ScrollView style={styles.view}>
             <Image source={require('../assets/vr.png')} style={{ width: '90%', height: 270, alignSelf: 'center', borderRadius: 25 }}></Image>
@@ -132,12 +79,8 @@ function Login({ navigation }) {
                 secureTextEntry
                 style={styles.inputField}
             />
-            {errorMessage && (
-                <Text style={styles.error}>Error: {errorMessage}</Text>
-            )}
-            {loginButton()}
-            <Text>{'\n'}</Text>
-            {signUpButton()}
+            <LoginButton email={email} password={password} navigation={navigation}></LoginButton>
+            <SignUpButton email={email} password={password} navigation={navigation}></SignUpButton>
         </ScrollView>
     );
 }

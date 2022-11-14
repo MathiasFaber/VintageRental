@@ -42,7 +42,7 @@ function Add_edit_Clothes({ navigation, route }) {
 
 
     navigation.addListener('focus', () => {
-        if (firebase.auth().currentUser?.displayName === null) {
+        if (firebase.auth().currentUser?.displayName === undefined) {
             return <View>
                 <Text style={{ textAlign: 'center', fontSize: 20 }}>Ikke logget ind :(((</Text>
                 <Button onPress={() => navigation.navigate('Login')} title="Log ind?" />

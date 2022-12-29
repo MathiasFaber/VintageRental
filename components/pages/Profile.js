@@ -6,14 +6,12 @@ import Pressable from 'react-native/Libraries/Components/Pressable/Pressable';
 function Profile({ navigation }) {
     const [state, setState] = useState(false)
 
+    // Updates on focus
     navigation.addListener('focus', () => {
-        if (state == true) {
-            setState(false)
-        } else {
-            setState(true)
-        }
+        state ? setState(false) : setState(true)
     })
 
+    // Logs out the user by calling the firebase authentication function "signOut()"
     const handleLogOut = async () => {
         await firebase.auth().signOut();
         alert("Du er nu logget ud, på gensyn! :D")
@@ -24,6 +22,7 @@ function Profile({ navigation }) {
         }
     };
 
+    // Checks if the user is logged in
     if (!firebase.auth().currentUser) {
         return <View>
             <Text style={{ textAlign: 'center', fontSize: 20 }}>Ikke logget ind :(((</Text>
@@ -31,24 +30,14 @@ function Profile({ navigation }) {
         </View>;
     }
 
+    // If the user is logged in, data about the user will be displayed
+    // When developing further, it would be nice to be see all user details and be able to update these. 
     if (firebase.auth().currentUser !== undefined) {
-        const meEmail = firebase.auth().currentUser?.email
-        const getUserAddress = () => { 
-            var returnThis;
-            var ref = firebase.database().ref(`/users`)
-            ref.orderByChild("mail").equalTo(meEmail).on('value', snapshot => {
-                const value = snapshot.val()
-                const lol = Object.values(value)
-                returnThis = lol[0].address
-            })
-            return returnThis
-        }
 
         return (
             <View style={styles.container}>
-                <Image source={require('../assets/vr.png')} style={{ width: '90%', height: 250, alignSelf: 'center', borderRadius: 25 }}></Image>
-                <Text style={{ borderTopWidth: 75, borderBottomWidth: 5, alignSelf: 'center', fontWeight: 'bold' }}>Nuværende bruger: {firebase.auth().currentUser.email}</Text>
-                <Text style={{ borderTopWidth: 5, borderBottomWidth: 50, alignSelf: 'center', fontWeight: 'bold' }}>Adresse: {getUserAddress()}</Text>
+                <Image source={require('../../assets/vr.png')} style={{ width: '90%', height: 250, alignSelf: 'center', borderRadius: 25 }}></Image>
+                <Text style={{ borderTopWidth: 75, borderBottomWidth: 55, alignSelf: 'center', fontWeight: 'bold' }}>Nuværende bruger: {firebase.auth().currentUser.email}</Text>
                 <Text style={{ alignSelf: 'center', fontWeight: '100' }}>"Liste over ting jeg har til salg"</Text>
                 <Text style={{ alignSelf: 'center', fontWeight: '100' }}>"Liste over ting jeg har til salg"</Text>
                 <Text style={{ borderBottomWidth: 100, alignSelf: 'center', fontWeight: '100' }}>"Liste over ting jeg har til salg"</Text>

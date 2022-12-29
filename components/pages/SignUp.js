@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import {
-    Button, Text,
+    Text,
     View,
     TextInput,
     StyleSheet,
+    Pressable
 } from 'react-native';
 import firebase from "firebase/compat";
-import { NavigationContainer } from '@react-navigation/native';
 
-
+// This components is used to create users in the app
 function SignUp({ navigation }) {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -18,7 +18,21 @@ function SignUp({ navigation }) {
 
 
     const renderButton = () => {
-        return <Button onPress={() => handleSubmit()} title="Create user" />;
+        return <Pressable style={{
+            alignItems: 'center',
+            justifyContent: 'center',
+            paddingVertical: 12,
+            paddingHorizontal: 32,
+            borderRadius: 20,
+            elevation: 3,
+            backgroundColor: '#fac8b4',
+            width: '96%',
+            alignSelf: 'center'
+        }} onPress={() => handleSubmit()}>
+            <Text>
+                Opret profil
+            </Text>
+        </Pressable>;
     };
 
     const handleSubmit = async () => {
@@ -26,39 +40,29 @@ function SignUp({ navigation }) {
             await firebase.auth().createUserWithEmailAndPassword(email, password).then((data) => {
             });
 
-            // after creating user, create user in database: https://stackoverflow.com/questions/43509021/how-to-add-username-with-email-and-password-in-firebase
-            // experiment, not tested
+            // after creating user with email and password, additional attributes should be added to the user.
+            // This is done here 
             firebase.auth().onAuthStateChanged(function (user) {
-                console.log(address)
                 if (user) {
                     // Updates the user attributes:
-                    user.updateProfile({ // <-- Update Method here
-
+                    user.updateProfile({ 
                         displayName: username,
-
-                    }).then(function () {
-
-                        // Profile updated successfully!
-                        //  "NEW USER NAME"
-
-                        var displayName = user.displayName;
-
-                        console.log(displayName, "displayName")
-                    }, function (error) {
-                        // An error happened.
-                        console.log(error)
-                    }).then(function () {
-                        var mail = user.email
-                        firebase
-                            .database()
-                            .ref(`/users/`)
-                            .push({ username, address, mail });
                     })
+                        .then(function () {
+                            var mail = user.email
+                            firebase
+                                .database()
+                                .ref(`/users/`)
+                                .push({ username, address, mail });
+                        }), function (error) {
+                            // Error handling
+                            console.log(error)
+                        }
                 }
             });
 
-            alert(`User created!`)
-            navigation.navigate('Min profil')
+            alert(`Bruger blev oprettet!`)
+            navigation.navigate('Clothes List')
         } catch (error) {
             setErrorMessage(error.message)
         }

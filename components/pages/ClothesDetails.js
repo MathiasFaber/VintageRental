@@ -1,14 +1,14 @@
 import * as React from 'react';
 import { View, Text, Image, StyleSheet, Pressable } from 'react-native';
-import firebase from 'firebase/compat';
 import { useEffect, useState } from "react";
 
-const ClothesDetails = ({ route, navigation }) => {
+// The ClothesDetails component is for displaying one single advertisement. 
+const ClothesDetails = ({ route }) => {
+
+    // Whenever an advertisement is clicked from the ClothesList page, the route is sent to this component, and the Clothes state is set to this particular advertisement data in the useEffect. 
     const [Clothes, setClothes] = useState({});
 
     useEffect(() => {
-        console.log(route.params.Clothes, "den her idnex 1 fejler")
-        console.log(route.params.Clothes[1], "index 1")
         const selectedClothing = route.params.Clothes
         selectedClothing[1] == undefined ? setClothes(route.params.Clothes) : setClothes(route.params.Clothes[1]);
         return () => {
@@ -16,9 +16,12 @@ const ClothesDetails = ({ route, navigation }) => {
         }
     });
 
+    // If something goes wrong, and there are no data sent to the component, "no data" will be displayed
     if (!Clothes) {
         return <Text>No data</Text>;
     }
+
+    // returns the info about the advertisement
     return (
         <View style={styles.container}>
             <Image

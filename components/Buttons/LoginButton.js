@@ -12,11 +12,10 @@ const LoginButton = ({
 
     const handleSubmit = async () => {
         setLoading(true)
-        console.log(loading)
         try {
             await firebase.auth().signInWithEmailAndPassword(email, password).then((data) => {
                 alert("Logged in succesfully :D")
-                navigation.navigate('Clothes List')
+                navigation.navigate('Min profil')
             });
             setLoading(false)
         } catch (error) {

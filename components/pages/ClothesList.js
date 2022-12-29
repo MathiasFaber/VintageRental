@@ -1,4 +1,4 @@
-import React, { useEffect, useState, memo, PureComponent } from 'react';
+import React, { useEffect, useState, memo } from 'react';
 import {
     Text,
     StyleSheet,
@@ -10,31 +10,24 @@ import {
     Pressable
 } from 'react-native';
 import firebase from "firebase/compat";
-import { FlatList } from 'react-native-gesture-handler';
 import { FlashList } from '@shopify/flash-list';
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 
-import noImage from '../assets/noImage.png';
+import noImage from '../../assets/noImage.png';
 
+// An issue we have been struggling with, is to load images in realtime from the database. 
+// We have not found a solution to this issue, which is why a default picture is loaded, when advertisements has just been created. 
+// When the photo can be found in the databae (firebase storage), it will be showed on the advertisement. 
 const DEFAULT_IMAGE = Image.resolveAssetSource(noImage).uri;
 
-/* todo: 
-        map; show a map of where items are (nice to have)
-        If vaskemærke is not checked off, you have to check off vaskeanvisning (fx. 30 grader osv) (need to have) DONE
-        signUp tilføj adresse (need to have) DONE
-        Anmod om udlejning knap (need to have) // more or less done 
-        onresolved/onrejected in firebase get image 
-*/
-
-// should probably use pure component, to not update already loaded items????
-
-// to have the photo with the clothes details, the photo "name" or potentially ID, should be connected to the details. This should be done by saving the image name/id in the database with the details in order to be able to fetch the photo when fetching the details
+// The ClothesList component shows all advertisements in the application
 function ClothesList({ navigation }) {
     const [Clothess, setClothess] = useState();
     const [Loading, setLoading] = useState(false);
     const [state, setState] = useState(false)
     const [stuff, setStuff] = useState([]) // stuff is only used to update a state, making it possible to load all images in the flashlist
 
+    // Checks if user is logged in
     if (!firebase.auth().currentUser) {
         return <View>
             <Text style={{ textAlign: 'center', fontSize: 20 }}>Ikke logget ind :(((</Text>
@@ -42,54 +35,59 @@ function ClothesList({ navigation }) {
         </View>;
     }
 
+    // Updates the page, when the user navigates to this page (This is used for updating the data, when new advertisements are created)
     navigation.addListener('focus', () => {
-        if (state == true) {
-            setState(false)
-        } else {
-            setState(true)
-        }
+        state ? setState(false) : setState(true)
     })
 
-
-
+    // The useEffect is dependent on the "state" useState variable.
+    // This means that this useEffect triggers, when the ClothesList page is navigated to/displayed on screen. 
     useEffect(() => {
+        // Activityindicator is showing that the page is loading untill advertisements are loaded. 
         setLoading(true)
-        const getData = async () => {
-            var updatedObjects;
-            var updatedObjects2 = [];
-            if (!Clothess) {
-                firebase
-                    .database()
-                    .ref('/Clothess')
-                    .on('value', snapshot => {
-                        updatedObjects = snapshot.val()
-                        setClothess(updatedObjects)
-                        Object.values(updatedObjects).forEach((x) => {
-                            console.log(x.img, "x.img")
-                            firebase
-                                .storage()
-                                .ref()
-                                .child(`Pictures/${x.img}`)
-                                .getDownloadURL()
-                                .then((url) => {
-                                    x.imgurl = url
-                                    setStuff(x)
-                                    updatedObjects2.push(x)
-                                }, () => {
-                                    x.imgurl = DEFAULT_IMAGE
-                                    setStuff(x)
-                                    updatedObjects2.push(x)
-                                })
-                        })
-                    })
-                setClothess(updatedObjects2)
-            }
-        }
+        // The getData function fetches all in the realtime database AND in the storage database. 
         getData()
         setLoading(false)
     }
     ), [state]
 
+    // getData fetches all advertisements from the databases.
+    const getData = async () => {
+        var updatedObjects;
+        var updatedObjects2 = [];
+        if (!Clothess) {
+            // The following code connects to the firebase databases and pushes data into the above listed variables. 
+            // The Clothes state is set to 
+            firebase
+                .database() // realtime database
+                .ref('/Clothess')
+                .on('value', snapshot => {
+                    updatedObjects = snapshot.val()
+                    setClothess(updatedObjects)
+                    Object.values(updatedObjects).forEach((x) => {
+                        firebase
+                            .storage() // storage database
+                            .ref()
+                            .child(`Pictures/${x.img}`) // finds images for each advertisement. 
+                            .getDownloadURL()
+                            // The .then method uses a onresolved/onrejected. Meaning that, if the image does not exist, the onrejected function is used, and the default image is used.
+                            .then((url) => {
+                                x.imgurl = url // x is the advertisement (from the forEach loop). Here, a new prop is added, containing the firebaseurl to the image. 
+                                setStuff(x) // setStuff is a useState that is set, in order to update the advertisement from the first firebase request, with the images from this firebase request 
+                                updatedObjects2.push(x)
+                            }, () => {
+                                x.imgurl = DEFAULT_IMAGE
+                                setStuff(x) // setStuff is a useState that is set, in order to update the advertisement from the first firebase request, with the images from this firebase request 
+                                updatedObjects2.push(x)
+                            })
+                    })
+                })
+            // Clothess is set to contain all advertisements, including images. 
+            setClothess(updatedObjects2)
+        }
+    }
+
+    // Activityindicator, showing that advertisements are on the way. 
     if (!Clothess) {
         return (
             <View>
@@ -98,9 +96,9 @@ function ClothesList({ navigation }) {
         )
     }
 
+    // When an advertisement is pressed, the user is navigated to the ClothesDetails page, with the route containing data about the chosen advertisement. 
     const handleSelectClothes = id => {
         const Clothes = Object.entries(Clothess).find(Clothes => Clothes[0] === id)
-        console.log(Clothes)
         navigation.navigate('Clothes Details', { Clothes });
     }
 
@@ -222,4 +220,7 @@ const styles = StyleSheet.create({
 
 });
 
+// memo allows the component to only re-render when it's props has changed.
+// If requests are sent to the database, and all advertisements in the database matches advertisements in the app, the page is not re-rendered
+// This is good for runtime.
 export default memo(ClothesList);

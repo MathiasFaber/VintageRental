@@ -25,7 +25,6 @@ function Add_edit_Clothes({ navigation, route }) {
     const initialState = { Produkt: '', Pris: '', Udlejningsperiode: '', Størrelse: '' }
     // The NewClothes state is manipulated when an advertisement is created or updated. It contains the initialstate, which will be updated to have the values of each key when an advertisement is created. 
     const [newClothes, setNewClothes] = useState(initialState);
-    const isEditClothes = route.name === "Edit Clothes"
     const [image, setImage] = useState([])
     const [uploading, setUploading] = useState(false)
     const [loading1, setLoading1] = useState(false)
@@ -295,9 +294,7 @@ eventuelle yderligere vaskeanvisninger.`
                         alignSelf: 'center',
                         marginBottom: 100
                     }} onPress={() => handleSave()}>
-                        {
-                            isEditClothes ? <Text>Save changes</Text> : <Text>Add clothes</Text>
-                        }
+                        <Text>Add clothes</Text>
                     </Pressable>
                     :
                     <ActivityIndicator size={'small'} color={'black'} />}

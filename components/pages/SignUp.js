@@ -3,10 +3,10 @@ import {
     Text,
     View,
     TextInput,
-    StyleSheet,
     Pressable
 } from 'react-native';
 import firebase from "firebase/compat";
+import GlobalStyles from '../../globalStyling/GlobalStyles';
 
 // This components is used to create users in the app
 function SignUp({ navigation }) {
@@ -16,19 +16,8 @@ function SignUp({ navigation }) {
     const [username, setUsername] = useState('')
     const [address, setAddress] = useState('')
 
-
     const renderButton = () => {
-        return <Pressable style={{
-            alignItems: 'center',
-            justifyContent: 'center',
-            paddingVertical: 12,
-            paddingHorizontal: 32,
-            borderRadius: 20,
-            elevation: 3,
-            backgroundColor: '#fac8b4',
-            width: '96%',
-            alignSelf: 'center'
-        }} onPress={() => handleSubmit()}>
+        return <Pressable style={GlobalStyles.signUp.button} onPress={() => handleSubmit()}>
             <Text>
                 Opret profil
             </Text>
@@ -60,7 +49,6 @@ function SignUp({ navigation }) {
                         }
                 }
             });
-
             alert(`Bruger blev oprettet!`)
             navigation.navigate('Clothes List')
         } catch (error) {
@@ -71,52 +59,38 @@ function SignUp({ navigation }) {
 
     return (
         <View>
-            <Text style={styles.header}>Opret profil</Text>
+            <Text style={GlobalStyles.signUp.header}>Opret profil</Text>
             <TextInput
                 placeholder="Navn"
                 value={username}
                 onChangeText={(username) => setUsername(username)}
-                style={styles.inputField}
+                style={GlobalStyles.signUp.inputField}
             />
             <TextInput
                 placeholder="Adresse"
                 value={address}
                 onChangeText={(address) => setAddress(address)}
-                style={styles.inputField}
+                style={GlobalStyles.signUp.inputField}
             />
             <TextInput
                 placeholder="Mail"
                 value={email}
                 onChangeText={(email) => setEmail(email)}
-                style={styles.inputField}
+                style={GlobalStyles.signUp.inputField}
             />
             <TextInput
                 placeholder="Adgangskode"
                 value={password}
                 onChangeText={(password) => setPassword(password)}
                 secureTextEntry
-                style={styles.inputField}
+                style={GlobalStyles.signUp.inputField}
             />
             {errorMessage && (
-                <Text style={styles.error}>Error: {errorMessage}</Text>
+                <Text style={GlobalStyles.signUp.error}>Error: {errorMessage}</Text>
             )}
             {renderButton()}
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    error: {
-        color: 'red',
-    },
-    inputField: {
-        borderWidth: 1,
-        margin: 10,
-        padding: 10,
-    },
-    header: {
-        fontSize: 40,
-    },
-});
 
 export default SignUp

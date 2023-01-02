@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { View, Text, Image, StyleSheet, Pressable } from 'react-native';
 import { useEffect, useState } from "react";
+import GlobalStyles from '../../globalStyling/GlobalStyles';
 
 // The ClothesDetails component is for displaying one single advertisement. 
 const ClothesDetails = ({ route }) => {
@@ -23,10 +24,10 @@ const ClothesDetails = ({ route }) => {
 
     // returns the info about the advertisement
     return (
-        <View style={styles.container}>
+        <View style={GlobalStyles.details.container}>
             <Image
                 source={{ url: Clothes.imgurl }}
-                style={{ width: '97%', height: '50%', alignSelf: "center" }}></Image>
+                style={GlobalStyles.details.img}></Image>
             {
                 Object.entries(Clothes).map((item, index) => {
                     // img, imgurl, koordinater og vaskeanvisnigner fjernes, for ikke at vise dem som skrift på siden. 
@@ -35,24 +36,14 @@ const ClothesDetails = ({ route }) => {
                         delete item[1]
                     }
                     return (
-                        <View style={styles.row} key={index}>
-                            <Text style={styles.label}>{item[0]} </Text>
-                            <Text style={styles.value}>{item[1]}</Text>
+                        <View style={GlobalStyles.details.row} key={index}>
+                            <Text style={GlobalStyles.details.label}>{item[0]} </Text>
+                            <Text style={GlobalStyles.details.value}>{item[1]}</Text>
                         </View>
                     )
                 })
             }
-            <Pressable style={{
-                alignItems: 'center',
-                justifyContent: 'center',
-                paddingVertical: 12,
-                paddingHorizontal: 32,
-                borderRadius: 20,
-                elevation: 3,
-                backgroundColor: '#fac8b4',
-                width: '96%',
-                alignSelf: 'center'
-            }} onPress={() => console.log('Button pressed')}>
+            <Pressable style={GlobalStyles.details.button} onPress={() => console.log('Button pressed')}>
                 <Text>
                     Kontakt udlejer
                 </Text>
@@ -62,14 +53,3 @@ const ClothesDetails = ({ route }) => {
 }
 
 export default ClothesDetails;
-
-const styles = StyleSheet.create({
-    container: { flex: 1, justifyContent: 'flex-start' },
-    row: {
-        margin: 5,
-        padding: 5,
-        flexDirection: 'row',
-    },
-    label: { width: 150, fontWeight: 'bold' },
-    value: { flex: 1 },
-});

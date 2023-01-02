@@ -5,6 +5,7 @@ import MapView, { Callout, Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { Accuracy } from "expo-location";
 import { useState, useEffect } from "react";
+import GlobalStyles from '../../globalStyling/GlobalStyles';
 
 function Map({ route, navigation }) {
     const [selectedCoordinate, setSelectedCoordinate] = useState(null)
@@ -48,13 +49,13 @@ function Map({ route, navigation }) {
 
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.text1}>
+        <View style={GlobalStyles.map.container}>
+            <Text style={GlobalStyles.map.text1}>
                 VintageRental
             </Text>
             <MapView
                 provider="google"
-                style={styles.map}
+                style={GlobalStyles.map.map}
                 showsUserLocation
                 region={initialRegion}
             >
@@ -74,7 +75,7 @@ function Map({ route, navigation }) {
                             </Text>
                             <Image
                                 source={{ url: marker.imgurl }}
-                                style={{ width: 250, height: 200, alignSelf: 'center' }}
+                                style={GlobalStyles.map.img}
                             >
 
                             </Image>
@@ -84,11 +85,11 @@ function Map({ route, navigation }) {
             </MapView>
             {
                 selectedCoordinate && selectedAddress && (
-                    <View style={styles.infoBox}>
-                        <Text style={styles.infoText}>
+                    <View style={GlobalStyles.map.infoBox}>
+                        <Text style={GlobalStyles.map.infoText}>
                             {selectedCoordinate.latitude}, {selectedCoordinate.longitude}
                         </Text>
-                        <Text style={styles.infoText}>
+                        <Text style={GlobalStyles.map.infoText}>
                             name: {selectedAddress[0].name}  region: {selectedAddress[0].region}
                         </Text>
                         <Button title="close" onPress={closeAdvertisement} />
@@ -99,41 +100,4 @@ function Map({ route, navigation }) {
     );
 }
 
-
-//Lokal styling til brug i map.js
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        backgroundColor: '#ecf0f1',
-        padding: 0,
-        height: '100%',
-        width: '100%'
-    },
-    text1: {
-        fontWeight: 'bold',
-        fontSize: 35,
-        textAlign: 'center',
-        fontFamily: 'Snell Roundhand',
-        borderWidth: 3,
-        borderColor: 'transparent',
-        borderBottomWidth: 8,
-        backgroundColor: '#d9825f',
-    },
-    map: { flex: 1 },
-    infoBox: {
-        height: 200,
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        backgroundColor: 'yellow',
-        justifyContent: 'center',
-        alignItems: 'center',
-        flex: 1,
-    },
-    infoText: {
-        fontSize: 15,
-    },
-});
 export default Map

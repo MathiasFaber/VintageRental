@@ -10,6 +10,7 @@ import firebase from "firebase/compat";
 import LoginButton from '../buttons/LoginButton';
 import SignUpButton from '../buttons/SignUpButton';
 import LogOutButton from '../buttons/LogOutButton';
+import GlobalStyles from '../../globalStyling/GlobalStyles';
 
 function Login({ navigation }) {
     const [email, setEmail] = useState('')
@@ -29,55 +30,27 @@ function Login({ navigation }) {
     }
 
     return (
-        <ScrollView style={styles.view}>
-            <Image source={require('../../assets/vr.png')} style={{ width: '90%', height: 270, alignSelf: 'center', borderRadius: 25 }}></Image>
+        <ScrollView>
+            <Image source={require('../../assets/vr.png')} style={GlobalStyles.login.loginImage}></Image>
             <Text>{'\n'}</Text>
-            <Text style={styles.header}>Login</Text>
+            <Text style={GlobalStyles.login.loginHeader}>Login</Text>
             <TextInput
                 placeholder="Mail"
                 value={email}
                 onChangeText={(email) => setEmail(email)}
-                style={styles.inputField}
+                style={GlobalStyles.login.inputField}
             />
             <TextInput
                 placeholder="Adgangskode"
                 value={password}
                 onChangeText={(password) => setPassword(password)}
                 secureTextEntry
-                style={styles.inputField}
+                style={GlobalStyles.login.inputField}
             />
             <LoginButton email={email} password={password} navigation={navigation}></LoginButton>
             <SignUpButton email={email} password={password} navigation={navigation}></SignUpButton>
         </ScrollView>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        justifyContent: 'center',
-        paddingTop: '15,5%',
-        backgroundColor: '#e2e1de',
-        padding: 8,
-    },
-    text: {
-        fontSize: 25,
-        alignSelf: 'center',
-        padding: 50
-    },
-    error: {
-        color: 'red',
-    },
-    inputField: {
-        borderWidth: 1,
-        margin: 10,
-        padding: 10,
-        borderRadius: 10
-    },
-    header: {
-        fontSize: 40,
-        fontFamily: 'Snell Roundhand',
-        alignSelf: 'center'
-    }
-});
 
 export default Login;

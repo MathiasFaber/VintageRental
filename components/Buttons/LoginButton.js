@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Pressable, ActivityIndicator, Text, View } from "react-native";
 import firebase from "firebase/compat";
+import GlobalStyles from '../../globalStyling/GlobalStyles';
 
 const LoginButton = ({
     navigation,
@@ -28,18 +29,7 @@ const LoginButton = ({
             {errorMessage && (
                 <Text>Error: {errorMessage}</Text>
             )}
-            <Pressable style={{
-                alignItems: 'center',
-                justifyContent: 'center',
-                paddingVertical: 12,
-                paddingHorizontal: 32,
-                borderRadius: 20,
-                elevation: 3,
-                backgroundColor: '#fac8b4',
-                width: '96%',
-                alignSelf: 'center',
-                marginBottom: 10
-            }} onPress={() => handleSubmit()}>
+            <Pressable style={GlobalStyles.btn.button} onPress={() => handleSubmit()}>
                 {loading ?
                     <ActivityIndicator size={'small'} color={'black'}></ActivityIndicator>
                     : <Text>

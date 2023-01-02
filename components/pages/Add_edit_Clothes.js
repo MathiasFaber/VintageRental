@@ -4,7 +4,6 @@ import {
     Text,
     View,
     TextInput,
-    StyleSheet,
     ScrollView,
     SafeAreaView,
     Alert,
@@ -18,6 +17,7 @@ import Pressable from 'react-native/Libraries/Components/Pressable/Pressable';
 import * as Location from 'expo-location';
 import { Accuracy } from "expo-location";
 import InfoBox from '../infoBox/InfoBox';
+import GlobalStyles from '../../globalStyling/GlobalStyles';
 
 // This is the Add/Edit clothes component, that handles new or updated advertisemnts in the app.
 function Add_edit_Clothes({ navigation, route }) {
@@ -37,7 +37,7 @@ function Add_edit_Clothes({ navigation, route }) {
     navigation.addListener('focus', () => {
         if (firebase.auth().currentUser?.displayName === undefined) {
             return <View>
-                <Text style={{ textAlign: 'center', fontSize: 20 }}>Ikke logget ind :(((</Text>
+                <Text style={GlobalStyles.add.text}>Ikke logget ind :(((</Text>
                 <Button onPress={() => navigation.navigate('Login')} title="Log ind?" />
             </View>;
         } else {
@@ -193,38 +193,38 @@ eventuelle yderligere vaskeanvisninger.`
     // All pages requires the user to be logged in
     if (!firebase.auth().currentUser) {
         return <View>
-            <Text style={{ textAlign: 'center', fontSize: 20 }}>Ikke logget ind :(((</Text>
+            <Text style={GlobalStyles.add.text}>Ikke logget ind :(((</Text>
             <Button onPress={() => navigation.navigate('Login')} title="Log ind?" />
         </View>;
     }
 
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={GlobalStyles.add.container}>
             <ScrollView>
-                <View style={styles.row3}>
-                    <Text style={styles.owner}>Udlejer: </Text>
+                <View style={GlobalStyles.add.row3}>
+                    <Text style={GlobalStyles.add.owner}>Udlejer: </Text>
                     <Text style={{ textAlign: 'center' }}>{username}</Text>
                 </View>
-                <View style={styles.row}>
-                    <Text style={styles.owner}>Adresse: </Text>
+                <View style={GlobalStyles.add.row}>
+                    <Text style={GlobalStyles.add.owner}>Adresse: </Text>
                     <Text style={{ textAlign: 'center' }}>{address}</Text>
                 </View>
                 {
                     Object.keys(initialState).map((key, index) => {
                         return (
-                            <View style={styles.row} key={index}>
-                                <Text style={styles.label}>{key}</Text>
+                            <View style={GlobalStyles.add.row} key={index}>
+                                <Text style={GlobalStyles.add.label}>{key}</Text>
                                 <TextInput
                                     value={newClothes[key]}
                                     onChangeText={(event) => changeTextInput(key, event)}
-                                    style={styles.input}
+                                    style={GlobalStyles.add.input}
                                 />
                             </View>
                         )
                     })
                 }
-                <View style={styles.row}>
-                    <Text style={styles.label}>Har vaskemærke</Text>
+                <View style={GlobalStyles.add.row}>
+                    <Text style={GlobalStyles.add.label}>Har vaskemærke</Text>
                     <Checkbox style={{ marginLeft: 20 }} value={checked} onValueChange={setChecked} color={'#d9825f'} />
                     <InfoBox text={infoText1}></InfoBox>
                 </View>
@@ -232,26 +232,21 @@ eventuelle yderligere vaskeanvisninger.`
                     checked ? null :
                         <View>
 
-                            <View style={styles.row}>
-                                <Text style={styles.label}>Må vaskes?</Text>
+                            <View style={GlobalStyles.add.row}>
+                                <Text style={GlobalStyles.add.label}>Må vaskes?</Text>
                                 <Checkbox style={{ marginLeft: 20 }} value={checked2} onValueChange={setChecked2} color={'#d9825f'} />
                             </View>
                             <View>
-                                <View style={styles.row}>
+                                <View style={GlobalStyles.add.row}>
                                     <Text style={{ fontWeight: 'bold' }}>Vaskeanvisninger:</Text>
                                 </View>
-                                <View style={styles.row2}>
+                                <View style={GlobalStyles.add.row2}>
                                     <TextInput
                                         multiline
                                         maxLength={120}
                                         placeholder={'Fx. "30 grader, må ikke stryges"'}
                                         onChangeText={(event) => changeTextInput("Vaskeanvisninger", event)}
-                                        style={{
-                                            borderWidth: 1,
-                                            padding: 5,
-                                            flex: 6,
-                                            marginLeft: 10,
-                                        }}
+                                        style={GlobalStyles.add.textInput}
                                     />
 
                                     <InfoBox text={infoText2}></InfoBox>
@@ -260,20 +255,8 @@ eventuelle yderligere vaskeanvisninger.`
                         </View>
                 }
 
-                {image[0] && <Image source={{ uri: image[0] }} style={{ width: 340, height: 400, alignSelf: "center", margin: 10 }} />}
-                <Pressable style={{
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    paddingVertical: 12,
-                    paddingHorizontal: 32,
-                    borderRadius: 20,
-                    elevation: 3,
-                    backgroundColor: '#fac8b4',
-                    width: '96%',
-                    alignSelf: 'center',
-                    marginBottom: 15,
-                    marginTop: 5,
-                }} onPress={pickImage}>
+                {image[0] && <Image source={{ uri: image[0] }} style={GlobalStyles.add.img} />}
+                <Pressable style={GlobalStyles.add.button1} onPress={pickImage}>
                     {loading1 ?
                         <ActivityIndicator size={'small'} color={'black'} />
                         :
@@ -282,18 +265,7 @@ eventuelle yderligere vaskeanvisninger.`
                 </Pressable>
 
                 {!uploading ?
-                    <Pressable style={{
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        paddingVertical: 12,
-                        paddingHorizontal: 32,
-                        borderRadius: 20,
-                        elevation: 3,
-                        backgroundColor: '#fac8b4',
-                        width: '96%',
-                        alignSelf: 'center',
-                        marginBottom: 100
-                    }} onPress={() => handleSave()}>
+                    <Pressable style={GlobalStyles.add.button2} onPress={() => handleSave()}>
                         <Text>Add clothes</Text>
                     </Pressable>
                     :
@@ -302,144 +274,5 @@ eventuelle yderligere vaskeanvisninger.`
         </SafeAreaView>
     );
 }
-
-const styles = StyleSheet.create({
-    textStyle: {
-        color: "white",
-        fontWeight: "bold",
-        textAlign: "center"
-    },
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        backgroundColor: '#fae4dc'
-    },
-    row: {
-        flexDirection: 'row',
-        height: 30,
-        margin: 10,
-        maxHeight: 100
-    },
-    row1: {
-        flexDirection: 'row',
-        height: 30,
-        margin: 10,
-        fontWeight: 'bold'
-    },
-    row2: {
-        flexDirection: 'row',
-        height: 55,
-        margin: 10,
-    },
-    row3: {
-        flexDirection: 'row',
-        height: 30,
-        margin: 10,
-        marginTop: 25
-    },
-    label: {
-        fontWeight: 'bold',
-        width: 130
-    },
-    input: {
-        borderWidth: 1,
-        padding: 5,
-        flex: 1
-    },
-    owner: {
-        fontWeight: 'bold',
-        width: 110,
-        flexDirection: 'row',
-        marginRight: '5%',
-
-    },
-    textBoxButton: {
-        position: 'absolute',
-        right: 20,
-        zIndex: 100,
-        width: 20,
-        height: 20,
-        borderWidth: 1,
-        borderRadius: 10,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    centeredView: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        marginTop: 22,
-        marginBottom: 10
-    },
-    modalView: {
-        margin: 20,
-        backgroundColor: "white",
-        borderRadius: 20,
-        padding: 35,
-        alignItems: "center",
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
-        elevation: 5
-    },
-    button: {
-        borderRadius: 20,
-        elevation: 2,
-        padding: 10,
-    },
-    buttonOpen: {
-        backgroundColor: "#fac8b4",
-        zIndex: 100,
-        width: 35,
-        height: 35,
-        borderRadius: 15,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: 15
-    },
-    buttonClose: {
-        backgroundColor: "#fac8b4",
-    },
-    textStyle: {
-        color: "white",
-        fontWeight: "bold",
-        textAlign: "center"
-    },
-    modalText: {
-        marginBottom: 15,
-        textAlign: "center"
-    },
-    centeredView1: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "left",
-        marginTop: 15,
-        marginBottom: 10,
-        marginLeft: 10
-    },
-    modalView1: {
-        margin: 20,
-        backgroundColor: "white",
-        borderRadius: 20,
-        padding: 35,
-        alignItems: "center",
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
-        elevation: 5
-    },
-    modalText1: {
-        marginBottom: 15,
-        textAlign: "center"
-    },
-});
 
 export default Add_edit_Clothes

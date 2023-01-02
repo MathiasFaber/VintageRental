@@ -4,15 +4,15 @@ import {useEffect, useState} from 'react'
 import {NavigationContainer, DefaultTheme} from "@react-navigation/native";
 import {createStackNavigator} from "@react-navigation/stack";
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
-import ClothesList from "./components/ClothesList";
-import Add_edit_Clothes from "./components/Add_edit_Clothes";
-import ClothesDetails from "./components/ClothesDetails";
+import ClothesList from "./components/pages/ClothesList";
+import Add_edit_Clothes from "./components/pages/Add_edit_Clothes";
+import ClothesDetails from "./components/pages/ClothesDetails";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import Profile from './components/Profile';
-import Message from './components/Message';
-import Login from './components/Login';
-import SignUp from './components/SignUp';
-import Map from './components/Map';
+import Profile from './components/pages/Profile';
+import Message from './components/pages/Message';
+import Login from './components/pages/Login';
+import SignUp from './components/pages/SignUp';
+import Map from './components/pages/Map';
 
 
 export default function App() {

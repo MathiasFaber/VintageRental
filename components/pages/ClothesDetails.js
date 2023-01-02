@@ -1,14 +1,15 @@
 import * as React from 'react';
 import { View, Text, Image, StyleSheet, Pressable } from 'react-native';
-import firebase from 'firebase/compat';
 import { useEffect, useState } from "react";
+import GlobalStyles from '../../globalStyling/GlobalStyles';
 
-const ClothesDetails = ({ route, navigation }) => {
+// The ClothesDetails component is for displaying one single advertisement. 
+const ClothesDetails = ({ route }) => {
+
+    // Whenever an advertisement is clicked from the ClothesList page, the route is sent to this component, and the Clothes state is set to this particular advertisement data in the useEffect. 
     const [Clothes, setClothes] = useState({});
 
     useEffect(() => {
-        console.log(route.params.Clothes, "den her idnex 1 fejler")
-        console.log(route.params.Clothes[1], "index 1")
         const selectedClothing = route.params.Clothes
         selectedClothing[1] == undefined ? setClothes(route.params.Clothes) : setClothes(route.params.Clothes[1]);
         return () => {
@@ -16,14 +17,17 @@ const ClothesDetails = ({ route, navigation }) => {
         }
     });
 
+    // If something goes wrong, and there are no data sent to the component, "no data" will be displayed
     if (!Clothes) {
         return <Text>No data</Text>;
     }
+
+    // returns the info about the advertisement
     return (
-        <View style={styles.container}>
+        <View style={GlobalStyles.details.container}>
             <Image
                 source={{ url: Clothes.imgurl }}
-                style={{ width: '97%', height: '50%', alignSelf: "center" }}></Image>
+                style={GlobalStyles.details.img}></Image>
             {
                 Object.entries(Clothes).map((item, index) => {
                     // img, imgurl, koordinater og vaskeanvisnigner fjernes, for ikke at vise dem som skrift på siden. 
@@ -32,24 +36,14 @@ const ClothesDetails = ({ route, navigation }) => {
                         delete item[1]
                     }
                     return (
-                        <View style={styles.row} key={index}>
-                            <Text style={styles.label}>{item[0]} </Text>
-                            <Text style={styles.value}>{item[1]}</Text>
+                        <View style={GlobalStyles.details.row} key={index}>
+                            <Text style={GlobalStyles.details.label}>{item[0]} </Text>
+                            <Text style={GlobalStyles.details.value}>{item[1]}</Text>
                         </View>
                     )
                 })
             }
-            <Pressable style={{
-                alignItems: 'center',
-                justifyContent: 'center',
-                paddingVertical: 12,
-                paddingHorizontal: 32,
-                borderRadius: 20,
-                elevation: 3,
-                backgroundColor: '#fac8b4',
-                width: '96%',
-                alignSelf: 'center'
-            }} onPress={() => console.log('Button pressed')}>
+            <Pressable style={GlobalStyles.details.button} onPress={() => console.log('Button pressed')}>
                 <Text>
                     Kontakt udlejer
                 </Text>
@@ -59,14 +53,3 @@ const ClothesDetails = ({ route, navigation }) => {
 }
 
 export default ClothesDetails;
-
-const styles = StyleSheet.create({
-    container: { flex: 1, justifyContent: 'flex-start' },
-    row: {
-        margin: 5,
-        padding: 5,
-        flexDirection: 'row',
-    },
-    label: { width: 150, fontWeight: 'bold' },
-    value: { flex: 1 },
-});

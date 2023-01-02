@@ -12,8 +12,8 @@ Scan the QR-code from this link, to run the app.
 The application will be running more smoothly when running it from expo servers, as running it locally (in development mode) entails bad runtime.
 In order to access the app from the Expo servers, you will need to log in to the expo-go app on your mobile device, with the following login details:
 
-### Username: faber123456789
-### Password: Test12345
+##### Username: faber123456789
+##### Password: Test12345
 
   - https://expo.dev/@faber123456789/VintageRental?serviceType=classic&distribution=expo-go
 

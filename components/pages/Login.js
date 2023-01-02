@@ -6,9 +6,9 @@ import {
     ScrollView
 } from 'react-native';
 import firebase from "firebase/compat";
-import LoginButton from '../buttons/LoginButton';
-import SignUpButton from '../buttons/SignUpButton';
-import LogOutButton from '../buttons/LogOutButton';
+import LoginButton from '../Buttons/LoginButton';
+import SignUpButton from '../Buttons/SignUpButton';
+import LogOutButton from '../Buttons/LogOutButton';
 import GlobalStyles from '../../globalStyling/GlobalStyles';
 
 function Login({ navigation }) {

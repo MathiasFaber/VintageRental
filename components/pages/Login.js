@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
     Text,
     TextInput,
-    StyleSheet,
     Image,
     ScrollView
 } from 'react-native';

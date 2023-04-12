@@ -2,6 +2,12 @@ import { StyleSheet } from "react-native";
 
 
 const GlobalStyles = StyleSheet.create({
+    textt: {
+        alignItems: "center",
+        alignSelf: "center",
+        fontSize: 17,
+        fontWeight: "bold"
+    },
 // styling for loginpage
     login: {
         loginImage: {
@@ -55,8 +61,7 @@ const GlobalStyles = StyleSheet.create({
         textInput: {
             borderWidth: 1,
             padding: 5,
-            flex: 6,
-            marginLeft: 10,
+            height: 75
         },
         row3: {
             flexDirection: 'row',
@@ -347,7 +352,7 @@ const GlobalStyles = StyleSheet.create({
             textAlign: 'center', fontSize: 20
         },
         img: {
-            width: '90%', height: 250, alignSelf: 'center', borderRadius: 25
+            width: '80%', height: '8%', alignSelf: 'center'
         },
         text1: {
             borderTopWidth: 75, borderBottomWidth: 55, alignSelf: 'center', fontWeight: 'bold'

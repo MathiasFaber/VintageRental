@@ -62,7 +62,6 @@ om det må renses,
 om det må tørretumbles og
 eventuelle yderligere vaskeanvisninger.`
 
-
     const updateLocation = async () => {
         var coordinates;
         await Location.getCurrentPositionAsync({ accuracy: Accuracy.Balanced }).then((item) => {
@@ -80,6 +79,7 @@ eventuelle yderligere vaskeanvisninger.`
     const changeTextInput = (name, event) => {
         setNewClothes({ ...newClothes, [name]: event });
     }
+
     // HandleSave is used when saving ypur edited or newly created advertisement. It saves the data to the database. 
     const handleSave = async () => {
         var { Produkt, Pris, Udlejningsperiode, Størrelse } = newClothes;

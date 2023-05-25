@@ -1,5 +1,4 @@
-import { StyleSheet } from "react-native";
-
+import { StyleSheet, Dimensions } from "react-native";
 
 const GlobalStyles = StyleSheet.create({
     textt: {
@@ -8,7 +7,7 @@ const GlobalStyles = StyleSheet.create({
         fontSize: 17,
         fontWeight: "bold"
     },
-// styling for loginpage
+    // styling for loginpage
     login: {
         loginImage: {
             width: '90%', height: 270, alignSelf: 'center', borderRadius: 25
@@ -39,7 +38,8 @@ const GlobalStyles = StyleSheet.create({
         container: {
             flex: 1,
             justifyContent: 'center',
-            backgroundColor: '#fae4dc'
+            backgroundColor: '#fae4dc',
+            flex: 1
         },
         row: {
             flexDirection: 'row',
@@ -198,8 +198,8 @@ const GlobalStyles = StyleSheet.create({
             marginBottom: 100
         },
         img: {
-            width: 340,
-            height: 400,
+            width: "80%",
+            height: "80%",
             alignSelf: "center",
             margin: 10
         }
@@ -229,20 +229,22 @@ const GlobalStyles = StyleSheet.create({
             width: '97%', height: '50%', alignSelf: "center"
         }
     },
-    // styling for the liost of advertisements page
+    // styling for the list of advertisements page
     list: {
         view: {
             backgroundColor: '#d9825f',
-            height: '100%',
-            width: '100%',
+            height: Dimensions.get("screen").height, 
+            width: Dimensions.get("screen").width
         },
         container: {
             flex: 1,
             borderWidth: 2,
             borderRadius: 25,
-            margin: 5,
+            marginLeft: 5,
+            marginRight: 5,
+            marginTop: 10,
             padding: 5,
-            height: 475,
+            height: 400,
             justifyContent: 'center',
             backgroundColor: '#fac8b4'
         },
@@ -264,9 +266,9 @@ const GlobalStyles = StyleSheet.create({
         },
         text3: {
             textAlign: 'center',
-            borderLeftWidth: 20,
             borderColor: "transparent",
-            fontWeight: "bold"
+            fontWeight: "bold",
+            fontSize: "18"
         },
         text4: {
             textAlign: 'left',
@@ -352,7 +354,7 @@ const GlobalStyles = StyleSheet.create({
             textAlign: 'center', fontSize: 20
         },
         img: {
-            width: '80%', height: '8%', alignSelf: 'center'
+            alignSelf: 'center', height: '80%'
         },
         text1: {
             borderTopWidth: 75, borderBottomWidth: 55, alignSelf: 'center', fontWeight: 'bold'

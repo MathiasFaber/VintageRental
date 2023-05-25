@@ -2,9 +2,10 @@ import * as React from 'react';
 import { View, Text, Image, Pressable } from 'react-native';
 import { useEffect, useState } from "react";
 import GlobalStyles from '../../globalStyling/GlobalStyles';
+import { NavigationContainer } from '@react-navigation/native';
 
 // The ClothesDetails component is for displaying one single advertisement. 
-const ClothesDetails = ({ route }) => {
+const ClothesDetails = ({ route, navigation }) => {
 
     // Whenever an advertisement is clicked from the ClothesList page, the route is sent to this component, and the Clothes state is set to this particular advertisement data in the useEffect. 
     const [Clothes, setClothes] = useState({});
@@ -22,11 +23,13 @@ const ClothesDetails = ({ route }) => {
         return <Text>No data</Text>;
     }
 
+    //console.log(Clothes.img, "url")
+
     // returns the info about the advertisement
     return (
         <View style={GlobalStyles.details.container}>
             <Image
-                source={{ url: Clothes.imgurl }}
+                source={ require('../../assets/vr.png')/*{ url: Clothes.img } */}
                 style={GlobalStyles.details.img}></Image>
             {
                 Object.entries(Clothes).map((item, index) => {
@@ -43,6 +46,12 @@ const ClothesDetails = ({ route }) => {
                     )
                 })
             }
+            <Pressable style={GlobalStyles.details.button} onPress={() => navigation.navigate('UserProfile', { Clothes })}>
+                <Text>
+                    Se profil
+                </Text>
+            </Pressable>
+            <Text></Text>
             <Pressable style={GlobalStyles.details.button} onPress={() => console.log('Button pressed')}>
                 <Text>
                     Kontakt udlejer

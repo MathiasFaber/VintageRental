@@ -27,6 +27,7 @@ function ClothesList({ navigation }) {
     const [state, setState] = useState(false)
     const [stuff, setStuff] = useState([]) // stuff is only used to update a state, making it possible to load all images in the flashlist
 
+    /*
     // Checks if user is logged in
     if (!firebase.auth().currentUser) {
         return <View>
@@ -34,12 +35,14 @@ function ClothesList({ navigation }) {
             <Button onPress={() => navigation.navigate('Login')} title="Log ind?" />
         </View>;
     }
+    */
 
+    /*
     // Updates the page, when the user navigates to this page (This is used for updating the data, when new advertisements are created)
     navigation.addListener('focus', () => {
         state ? setState(false) : setState(true)
     })
-
+*/
     // The useEffect is dependent on the "state" useState variable.
     // This means that this useEffect triggers, when the ClothesList page is navigated to/displayed on screen. 
     useEffect(() => {
@@ -63,12 +66,13 @@ function ClothesList({ navigation }) {
                 .ref('/Clothess')
                 .on('value', snapshot => {
                     updatedObjects = snapshot.val()
+                    //console.log(updatedObjects)
                     setClothess(updatedObjects)
                     Object.values(updatedObjects).forEach((x) => {
                         firebase
                             .storage() // storage database
                             .ref()
-                            .child(`Pictures/${x.img}`) // finds images for each advertisement. 
+                            .child(`pictures/advertisements/${x.img}`) // finds images for each advertisement. 
                             .getDownloadURL()
                             // The .then method uses a onresolved/onrejected. Meaning that, if the image does not exist, the onrejected function is used, and the default image is used.
                             .then((url) => {
@@ -107,46 +111,31 @@ function ClothesList({ navigation }) {
 
     return (
         <View style={GlobalStyles.list.view}>
-            <View style={{flexDirection:'row'}}>
-            <Text style={GlobalStyles.list.text1}>
-                VintageRental
-            </Text>
-            <Pressable style={GlobalStyles.list.button} onPress={() => navigation.navigate('Map', Clothess)}>
+            <View style={{ flexDirection: 'row' }}>
+                <Text style={GlobalStyles.list.text1}>
+                    VintageRental
+                </Text>
+                <Pressable style={GlobalStyles.list.button} onPress={() => navigation.navigate('Map', Clothess)}>
                     <FontAwesome name="map-marker" size={20} />
                 </Pressable>
             </View>
-            
+
             <FlashList
                 estimatedItemSize={50}
-                style={GlobalStyles.list.background}
                 data={ClothesArray}
                 initialNumToRender={2}
-                contentContainerStyle={{ paddingBottom: 75 }}
                 keyExtractor={(item, index) => ClothesKeys[index]}
                 renderItem={({ item, index }) => {
                     return (
                         <View>
                             <TouchableOpacity style={GlobalStyles.list.container} onPress={() => handleSelectClothes(ClothesKeys[index])}>
-                                {Loading ? <View>
-                                    <ActivityIndicator size={'large'} color='black' style={{ height: '100%' }} />
-                                </View> :
-                                    <Image
-                                        source={{ uri: item.imgurl }}
-                                        style={GlobalStyles.list.img}
-                                    />
-                                }
+                                <Image
+                                    source={require('../../assets/vr.png')/*{uri: item.img}*/ }
+                                    style={GlobalStyles.list.img}
+                                />
                                 <Text style={GlobalStyles.list.text3}>
                                     {'\n'}
-                                    {item.Produkt}
-                                    {'\n'}
-                                </Text>
-                                <Text style={GlobalStyles.list.text4}>
-
-                                    Pris: {item.Pris}
-                                    {'\n'}
-                                    Størrelse: {item.Størrelse}
-                                    {'\n'}
-                                    Udlejningsperiode: {item.Udlejningsperiode}
+                                    {`${item.Produkt}, ${item.Størrelse}, ${item.Pris}`}
                                     {'\n'}
                                 </Text>
                             </TouchableOpacity>

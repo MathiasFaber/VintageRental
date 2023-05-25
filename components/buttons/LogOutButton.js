@@ -7,6 +7,7 @@ const LogOutButton = ({navigation}) => {
 
     const handleLogOut = async () => {
         await firebase.auth().signOut();
+        console.log(firebase.auth().currentUser, "logout currentuser")
         alert("Du er nu logget ud, på gensyn! :D")
         navigation.navigate("Clothes List")
     };

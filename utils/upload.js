@@ -17,7 +17,6 @@ const updateLocation = async () => {
 };
 
 async function uploadData (username, image, newClothes, Vaskeanvisninger) {
-    console.log("uploaddata function")
     var { Produkt, Pris, Udlejningsperiode, Størrelse } = newClothes;
 
     const coordinates = await updateLocation()
@@ -29,7 +28,6 @@ async function uploadData (username, image, newClothes, Vaskeanvisninger) {
         const snapshot = await ref.put(blob);
 
         snapshot.ref.getDownloadURL().then((url) => {
-            console.log("rt db")
             try {
                 firebase
                     .database()
@@ -52,7 +50,6 @@ async function uploadData (username, image, newClothes, Vaskeanvisninger) {
             }
         });
     } catch (error) {
-        console.log("something went wrong")
         console.log(error);
         return null;
     }

@@ -28,20 +28,15 @@ function UserProfile({ route, navigation }) {
         ref.orderByChild("id").equalTo(id).on('value', snapshot => {
             const value = snapshot.val()
             const objectValues = Object.values(value)
-            console.log(objectValues[0], "user")
             setUser(objectValues)
         })
     }
 
     const getAds = () => {
         const ref = firebase.database().ref(`/Clothess`)
-        console.log(ref)
-
         ref.orderByChild("Udlejer").equalTo(id).on('value', snapshot => {
-            console.log(snapshot)
             const value = snapshot.val()
             const objectValues = Object.values(value)
-            console.log(objectValues, "ads")
             setAds(objectValues)
         })
 
@@ -92,8 +87,6 @@ function UserProfile({ route, navigation }) {
     )
 
     const adKeys = Object.keys(ads);
-
-    console.log(user, "username")
 
     return (
         <View style={{ height: Dimensions.get("screen").height, width: Dimensions.get("screen").width, minHeight: 2 }}>

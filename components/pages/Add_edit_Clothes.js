@@ -43,11 +43,8 @@ function Add_edit_Clothes({ navigation, route }) {
             </View>;
         } else {
             const user = firebase.auth().currentUser
-            //console.log(JSON.stringify(user, null, 2), "user")
             const uid = user.uid
             var ref = firebase.database().ref(`/users`)
-           // console.log(uid, "uuid")
-           // console.log(ref.orderByChild("mail"), "ref")
             ref.orderByChild("id").equalTo(uid).on('value', snapshot => {
                 const value = snapshot.val()
                 const objectValues = Object.values(value)
@@ -89,7 +86,6 @@ eventuelle yderligere vaskeanvisninger.`
             Vaskeanvisninger = "Har vaskemærke"
         }
         setUploading(true)
-        console.log(image, "image")
         await uploadData(id, image, newClothes, Vaskeanvisninger)
         setUploading(false)
         Alert.alert("Din annonce blev gemt! :D");
@@ -105,7 +101,7 @@ eventuelle yderligere vaskeanvisninger.`
             mediaTypes: ImagePicker.MediaTypeOptions.Images, // We can specify whether we need only Images or Videos
             allowsEditing: true,
             aspect: [4, 3],
-            quality: 1,   // 0 means compress for small size, 1 means compress for maximum quality
+            quality: 0,   // 0 means compress for small size, 1 means compress for maximum quality
         });
         source = result
 

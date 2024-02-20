@@ -45,7 +45,7 @@ function SignUp({ navigation }) {
             mediaTypes: ImagePicker.MediaTypeOptions.Images, // We can specify whether we need only Images or Videos
             allowsEditing: true,
             aspect: [4, 3],
-            quality: 1,   // 0 means compress for small size, 1 means compress for maximum quality
+            quality: 0,   // 0 means compress for small size, 1 means compress for maximum quality
         });
         source = result
 
@@ -62,7 +62,6 @@ function SignUp({ navigation }) {
 
         // If no errors occurred when picking an image, the state variable is set.
         if (!result.cancelled) {
-            console.log(source.uri, fileName)
             setImage([source.uri, fileName]);
         }
         // Picking an image is done, and the activityindicator is turned off.
@@ -74,7 +73,6 @@ function SignUp({ navigation }) {
         try {
             await firebase.auth().createUserWithEmailAndPassword(email, password).then(async () => {
                 await firebase.auth().signInWithEmailAndPassword(email, password).then(async (x) => {
-                    console.log(x)
                     const id = x.user.uid
                     const mail = x.user.email
                     try {
@@ -92,7 +90,6 @@ function SignUp({ navigation }) {
                             }
                         });
                     } catch (error) {
-                        console.log("something went wrong")
                         console.log(error);
                         return null;
                     }

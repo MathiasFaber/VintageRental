@@ -23,8 +23,6 @@ const ClothesDetails = ({ route, navigation }) => {
         return <Text>No data</Text>;
     }
 
-    //console.log(Clothes.img, "url")
-
     // returns the info about the advertisement
     return (
         <View style={GlobalStyles.details.container}>

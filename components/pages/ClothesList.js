@@ -66,7 +66,6 @@ function ClothesList({ navigation }) {
                 .ref('/Clothess')
                 .on('value', snapshot => {
                     updatedObjects = snapshot.val()
-                    //console.log(updatedObjects)
                     setClothess(updatedObjects)
                     Object.values(updatedObjects).forEach((x) => {
                         firebase
